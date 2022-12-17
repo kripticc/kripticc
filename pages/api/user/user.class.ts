@@ -51,4 +51,28 @@ export class User {
     });
     return User.fromUserData(userData);
   }
+
+  static async updateUser(user: User): Promise<User | null> {
+    const userData = await prisma.user.update({
+      where: {
+        name: user.name,
+      },
+      data: {
+        alias: user.alias,
+        email_hash: user.email_hash,
+        secret: user.secret,
+        profile_image_url: user.profile_image_url,
+      },
+    });
+    return User.fromUserData(userData);
+  }
+
+    static async deleteUser(user: User): Promise<User | null> {
+    const userData = await prisma.user.delete({
+      where: {
+        name: user.name,
+      },
+    });
+    return User.fromUserData(userData);
+    }
 }
