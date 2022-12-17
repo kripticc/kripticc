@@ -1,11 +1,9 @@
 services:
-  db:
-    image: postgres:9.6
+  kripticc_cockroach:
+    image: cockroachdb/cockroach:latest
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      - "26257:26257"
+      - "8080:8080"
+    command: start-single-node --insecure
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - ./cockroach-data:/cockroach/cockroach-data
