@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                Int         @id @default(autoincrement())
+  id                BigInt      @id @default(sequence())
   email_hash        String      @unique
   name              String?     @unique
   alias             String?
@@ -19,10 +19,11 @@ model User {
   communes          Commune[]
   Post              Post[]
   Moderator         Moderator[]
+  Admin             Admin[]
 }
 
 model Commune {
-  id          Int         @id @default(autoincrement())
+  id          BigInt      @id @default(sequence())
   uuid        String      @unique
   name        String      @unique
   description String
@@ -30,7 +31,7 @@ model Commune {
   is_private  Boolean     @default(false)
   is_banned   Boolean     @default(false)
   creator     User        @relation(fields: [creator_id], references: [id])
-  creator_id  Int
+  creator_id  BigInt
   created_at  DateTime    @default(now())
   updated_at  DateTime    @updatedAt
   Post        Post[]
@@ -38,7 +39,7 @@ model Commune {
 }
 
 model Post {
-  id         Int      @id @default(autoincrement())
+  id         BigInt   @id @default(sequence())
   uuid       String   @unique
   title      String
   content    String
@@ -46,19 +47,27 @@ model Post {
   is_private Boolean  @default(false)
   is_banned  Boolean  @default(false)
   creator    User     @relation(fields: [creator_id], references: [id])
-  creator_id Int
+  creator_id BigInt
   commune    Commune  @relation(fields: [commune_id], references: [id])
-  commune_id Int
+  commune_id BigInt
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Moderator {
-  id         Int      @id @default(autoincrement())
+  id         BigInt   @id @default(sequence())
   user       User     @relation(fields: [user_id], references: [id])
-  user_id    Int
+  user_id    BigInt
   commune    Commune  @relation(fields: [commune_id], references: [id])
-  commune_id Int
+  commune_id BigInt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Admin {
+  id         BigInt   @id @default(sequence())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    BigInt
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -67,6 +76,7 @@ enum CommuneType {
   TEXT
   IMAGE
   VIDEO
+  GIF
   MISC
 }
 
@@ -74,5 +84,6 @@ enum PostType {
   TEXT
   IMAGE
   VIDEO
+  GIF
   LINK
 }
