@@ -4,15 +4,16 @@ generator client {
 
 datasource db {
   provider = "cockroachdb"
+  //  url      = env("DATABASE_URL_PROD")
   url      = env("DATABASE_URL")
 }
 
 model User {
   id                BigInt      @id @default(sequence())
   email_hash        String      @unique
-  name              String?     @unique
+  name              String      @unique
   alias             String?
-  secret            String?     @unique
+  secret            String      @unique
   profile_image_url String?
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
@@ -46,9 +47,9 @@ model Post {
   type       PostType @default(TEXT)
   is_private Boolean  @default(false)
   is_banned  Boolean  @default(false)
-  creator    User     @relation(fields: [creator_id], references: [id])
+  creator    User     @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   creator_id BigInt
-  commune    Commune  @relation(fields: [commune_id], references: [id])
+  commune    Commune  @relation(fields: [commune_id], references: [id], onDelete: Cascade)
   commune_id BigInt
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
