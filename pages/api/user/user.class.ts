@@ -1,4 +1,5 @@
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import _ from "lodash";
 
 const prisma = new PrismaClient();
 
@@ -7,33 +8,45 @@ const prisma = new PrismaClient();
  *
  */
 export class User {
+  id: number | null;
   email_hash: string;
   name: string;
   alias: string | null;
   secret: string;
   profile_image_url: string | null;
+  created_at: Date | null | undefined;
+  updated_at: Date | null | undefined;
 
   constructor(
-      email_hash: string,
-      name: string,
-      alias: string | null,
-      secret: string,
-      profile_image_url: string | null
+    id: number | null,
+    email_hash: string,
+    name: string,
+    alias: string | null,
+    secret: string,
+    profile_image_url: string | null,
+    created_at: Date | null,
+    updated_at: Date | null
   ) {
+    this.id = id;
     this.email_hash = email_hash;
     this.name = name;
     this.alias = alias;
     this.secret = secret;
     this.profile_image_url = profile_image_url;
+    this.created_at = created_at;
+    this.updated_at = updated_at;
   }
 
   static fromUserData(userData: any): User {
     return new User(
-        userData.email_hash,
-        userData.name,
-        userData.alias,
-        userData.secret,
-        userData.profile_image_url
+      userData.id,
+      userData.email_hash,
+      userData.name,
+      userData.alias,
+      userData.secret,
+      userData.profile_image_url,
+      userData.created_at,
+      userData.updated_at
     );
   }
 
@@ -43,7 +56,7 @@ export class User {
         name,
       },
     });
-    return userData ? User.fromUserData(userData) : null;
+    return userData ? <User>_.omit(User.fromUserData(userData), ["secret", "email_hash"]) : null;
   }
 
   static async saveUser(user: User): Promise<User | null> {
@@ -56,7 +69,7 @@ export class User {
         profile_image_url: user.profile_image_url,
       },
     });
-    return User.fromUserData(userData);
+    return <User>_.omit(User.fromUserData(userData), ["secret", "email_hash"]);
   }
 
   static async updateUser(user: User): Promise<User | null> {
@@ -71,7 +84,7 @@ export class User {
         profile_image_url: user.profile_image_url,
       },
     });
-    return User.fromUserData(userData);
+    return <User>_.omit(User.fromUserData(userData), ["secret", "email_hash"]);
   }
 
   static async deleteUser(user: User): Promise<User | null> {
@@ -80,6 +93,6 @@ export class User {
         name: user.name,
       },
     });
-    return User.fromUserData(userData);
+    return <User>_.omit(User.fromUserData(userData), ["secret", "email_hash"]);
   }
 }

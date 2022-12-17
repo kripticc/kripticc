@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id                BigInt      @id @default(sequence())
+  id                Int         @id @default(sequence())
   email_hash        String      @unique
   name              String      @unique
   alias             String?
@@ -24,7 +24,7 @@ model User {
 }
 
 model Commune {
-  id          BigInt      @id @default(sequence())
+  id          Int         @id @default(sequence())
   uuid        String      @unique
   name        String      @unique
   description String
@@ -32,7 +32,7 @@ model Commune {
   is_private  Boolean     @default(false)
   is_banned   Boolean     @default(false)
   creator     User        @relation(fields: [creator_id], references: [id])
-  creator_id  BigInt
+  creator_id  Int
   created_at  DateTime    @default(now())
   updated_at  DateTime    @updatedAt
   Post        Post[]
@@ -40,7 +40,7 @@ model Commune {
 }
 
 model Post {
-  id         BigInt   @id @default(sequence())
+  id         Int      @id @default(sequence())
   uuid       String   @unique
   title      String
   content    String
@@ -48,27 +48,27 @@ model Post {
   is_private Boolean  @default(false)
   is_banned  Boolean  @default(false)
   creator    User     @relation(fields: [creator_id], references: [id], onDelete: Cascade)
-  creator_id BigInt
+  creator_id Int
   commune    Commune  @relation(fields: [commune_id], references: [id], onDelete: Cascade)
-  commune_id BigInt
+  commune_id Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Moderator {
-  id         BigInt   @id @default(sequence())
+  id         Int      @id @default(sequence())
   user       User     @relation(fields: [user_id], references: [id])
-  user_id    BigInt
+  user_id    Int
   commune    Commune  @relation(fields: [commune_id], references: [id])
-  commune_id BigInt
+  commune_id Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Admin {
-  id         BigInt   @id @default(sequence())
+  id         Int      @id @default(sequence())
   user       User     @relation(fields: [user_id], references: [id])
-  user_id    BigInt
+  user_id    Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
