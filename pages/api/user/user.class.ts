@@ -1,5 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
+
 const prisma = new PrismaClient();
+
+/**
+ * User class
+ *
+ */
 export class User {
   email_hash: string;
   name: string;
@@ -8,11 +14,11 @@ export class User {
   profile_image_url: string | null;
 
   constructor(
-    email_hash: string,
-    name: string,
-    alias: string | null,
-    secret: string,
-    profile_image_url: string | null
+      email_hash: string,
+      name: string,
+      alias: string | null,
+      secret: string,
+      profile_image_url: string | null
   ) {
     this.email_hash = email_hash;
     this.name = name;
@@ -23,13 +29,14 @@ export class User {
 
   static fromUserData(userData: any): User {
     return new User(
-      userData.email_hash,
-      userData.name,
-      userData.alias,
-      userData.secret,
-      userData.profile_image_url
+        userData.email_hash,
+        userData.name,
+        userData.alias,
+        userData.secret,
+        userData.profile_image_url
     );
   }
+
   static async findUserByName(name: string): Promise<User | null> {
     const userData = await prisma.user.findUnique({
       where: {
@@ -67,12 +74,12 @@ export class User {
     return User.fromUserData(userData);
   }
 
-    static async deleteUser(user: User): Promise<User | null> {
+  static async deleteUser(user: User): Promise<User | null> {
     const userData = await prisma.user.delete({
       where: {
         name: user.name,
       },
     });
     return User.fromUserData(userData);
-    }
+  }
 }
