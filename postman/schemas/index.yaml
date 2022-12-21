@@ -1,0 +1,283 @@
+openapi: 3.1.0
+info:
+  version: '0.1'
+  title: 'kripticc'
+  license:
+    name: AGPL
+servers:
+  - url: 'localhost:3000'
+paths:
+  /user:
+    get:
+      summary: 'Returns details about a particular user'
+      operationId: listUser
+      tags:
+        - user
+      parameters:
+        - name: user_name
+          in: query
+          description: name of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Details about a user by user name'
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: 'Returns details of the newly created user'
+      operationId: createUser
+      tags:
+        - user
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: 'Details about the created commune'
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'                
+    patch:
+        summary: 'Patches the data of the user.'
+        operationId: patchUser
+        tags:
+            - user
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/User'
+        responses:
+            '200':
+                description: 'Details about the created commune'
+                headers:
+                    x-next:
+                        description: A link to the next page of responses
+                        schema:
+                            type: string
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/User'
+            default:
+                description: Unexpected error
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Error'
+    delete:
+      summary: 'Returns details about the deleted user'
+      operationId: deleteUser
+      tags:
+        - user
+      parameters:
+        - name: user_name
+          in: query
+          description: name of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Details about a user by user name'
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'        
+  /commune:
+    get:
+      summary: 'Returns details about a particular commune'
+      operationId: listCommune
+      tags:
+        - commune
+      parameters:
+        - name: commune_name
+          in: query
+          description: Name of the commune
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-zA-Z0-9]+$
+      responses:
+        '200':
+          description: 'Details about a newly created commune'
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+                examples:
+                  - '/?nextPage=2'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commune'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: 'Returns details of the newly created commune'
+      operationId: createCommune
+      tags:
+        - commune
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commune'
+      responses:
+        '200':
+          description: 'Details about a newly created commune'
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commune'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - user_name
+        - email
+        - password
+        - profile_pic
+        - salt
+        - bio
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        user_name:
+          type: string
+          pattern: ^[a-zA-Z0-9]+$
+          minLength: 4
+          maxLength: 64
+        email_hash:
+          type: string
+          format: byte
+        password:
+          type: string
+          format: password 
+          pattern: ^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$ 
+        profile_pic:
+            type: string  
+            examples: path/to/the/pic  
+        salt:
+            type: string
+        bio:
+            type: string
+            nullable: true
+            examples: Hi! This is a sample bio.
+        created_at:
+            type: string
+            format: date-time
+            writeOnly: true
+        updated_at: 
+            type: string
+            format: date-time
+            writeOnly: true
+        deleted_at:
+            type: string
+            format: date-time
+            writeOnly: true
+    Commune:
+      type: object
+      required:
+        - commune_name
+        - description
+        - access_level
+      properties:
+          commune_name:
+              type: string
+              pattern: ^[a-zA-Z0-9]+$
+              examples: videos
+          description:
+              type: string
+              examples: Hi! This is a test description of a commune
+          access_level:
+              type: string
+              default: sfw
+              examples: sfw
+          created_at:
+              type: string
+              format: date-time
+              writeOnly: true
+          updated_at:
+              type: string
+              format: date-time
+              writeOnly: true
+          deleted_at:
+              type: string
+              format: date-time
+              writeOnly: true
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
